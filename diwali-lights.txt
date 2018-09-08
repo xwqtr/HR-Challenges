@@ -1,0 +1,42 @@
+///https://www.hackerrank.com/challenges/diwali-lights/problem
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+class Solution {
+
+    /*
+     * Complete the lights function below.
+     */
+    static long lights(int n) {
+         
+        long result = 0;
+        for(int i = 0 ; i <n ; i++)
+        {
+            result =(result*2 +1)%100000;
+            
+        }
+        
+        
+        return result;
+
+    }
+
+    static void Main(string[] args) {
+        TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
+
+        int t = Convert.ToInt32(Console.ReadLine());
+
+        for (int tItr = 0; tItr < t; tItr++) {
+            int n = Convert.ToInt32(Console.ReadLine());
+
+            long result = lights(n);
+
+            textWriter.WriteLine(result);
+        }
+
+        textWriter.Flush();
+        textWriter.Close();
+    }
+}
