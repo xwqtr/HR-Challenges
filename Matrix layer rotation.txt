@@ -1,0 +1,104 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
+using System.Text;
+using System;
+
+class Solution {
+
+    // Complete the matrixRotation function below.
+    static void matrixRotation(List<List<int>> matrix, int r) {
+        
+        int yCnt = matrix.Count;
+        int xCnt = matrix[0].Count;
+        int quadrangelesCount = 0;
+        if (yCnt <=xCnt)
+        {
+            quadrangelesCount = yCnt / 2;
+        }
+        else
+        {
+            quadrangelesCount = xCnt / 2;
+        }
+        List<List<int>> quadrangles = new List<List<int>>();
+
+        //to lines
+        for (int i = 0; i < quadrangelesCount; i++)
+        {
+            IEnumerable<int> top = matrix[i].Where((q, ind) => ind >= i && ind <= xCnt - 2 - i);
+            IEnumerable<int> right = matrix.Where((q, ind) => ind < yCnt - 1 - i && ind >= i).Select(z => z[z.Count - 1 - i]);
+            IEnumerable<int> bot = matrix[yCnt - 1 - i].Where((q, ind) => ind > i && ind <= xCnt - 1 - i).Reverse();
+            IEnumerable<int> left = matrix.Where((q, ind) => ind > i && ind <= yCnt - 1 - i).Select(z => z[i]).Reverse();
+            quadrangles.Add(top.Concat(right).Concat(bot).Concat(left).ToList());
+        }
+
+        List<IEnumerable<int>> qLines = quadrangles.Select(a => a.Skip(r % a.Count()).Concat(a.Take(r % a.Count()))).ToList();
+
+        List<List<int>> result = new List<List<int>>();
+        for (int index = qLines.Count - 1; index >= 0; index--)
+        {
+
+
+            IEnumerable<int> q = qLines[index];
+            List<int> top = q.Take(xCnt - 2 * index).ToList();
+            int skip = xCnt - 2 * index;
+            List<int> right = q.Skip(skip).Take(yCnt - 2 - 2 * index).ToList();
+            skip += yCnt - 2 - 2 * index;
+            List<int> bot = q.Skip(skip).Take(xCnt - 2 * index).Reverse().ToList();
+
+
+            skip += xCnt - 2 * index;
+            List<int> left = q.Skip(skip).Take(yCnt - 2 * index).Reverse().ToList();
+            for (int y = 0; y < left.Count; y++)
+            {
+                if (result.Count > y)
+                {
+                    result[y].Insert(0, left[y]);
+                }
+                else
+                {
+                    result.Add(new List<int>());
+                    result[y].Add(left[y]);
+                }
+
+                result[y].Add(right[y]);
+
+            }
+
+            result.Insert(0, top);
+            result.Add(bot);
+
+
+
+        }
+        result.ForEach(x => { x.ForEach(z => Console.Write(z + " ")); Console.WriteLine(); });
+    }
+
+    static void Main(string[] args) {
+        string[] mnr = Console.ReadLine().TrimEnd().Split(' ');
+
+        int m = Convert.ToInt32(mnr[0]);
+
+        int n = Convert.ToInt32(mnr[1]);
+
+        int r = Convert.ToInt32(mnr[2]);
+
+        List<List<int>> matrix = new List<List<int>>();
+
+        for (int i = 0; i < m; i++) {
+            matrix.Add(Console.ReadLine().TrimEnd().Split(' ').ToList().Select(matrixTemp => Convert.ToInt32(matrixTemp)).ToList());
+        }
+
+        matrixRotation(matrix, r);
+    }
+}
+
+
